@@ -1,0 +1,5 @@
+django==3.2
+django-baton
+djangorestframework
+djangorestframework-jwt
+Pillow
