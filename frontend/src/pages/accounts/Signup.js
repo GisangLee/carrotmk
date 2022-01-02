@@ -90,7 +90,7 @@ const Signup = () => {
                             <Select.Option value="여자">여자</Select.Option>
                         </Select>
                     </Form.Item>
-
+                    
                     <Form.Item>
                         <Button type="primary" htmlType="submit">회원가입</Button>
                     </Form.Item>
