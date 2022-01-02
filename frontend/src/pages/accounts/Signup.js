@@ -22,8 +22,8 @@ const Signup = () => {
             const { username, email, password, password1, gender } = values;
 
             setFieldErrors({})
+
             const data = {username, email, password, gender}
-            console.log("data : ", data)
 
             if (password != password1){
                 notification.open({
@@ -68,29 +68,90 @@ const Signup = () => {
                 layout="horizontal"
                 onFinish={onFinish}
                 >
-                    <Form.Item label="닉네임" name="username" rules={[{required:true, message:"닉네임을 입력해주세요."}]} hasFeedback>
+                    <Form.Item
+                        label="닉네임"
+                        name="username"
+                        rules={
+                            [
+                                {
+                                    required:true,
+                                    message:"닉네임을 입력해주세요."
+                                }    
+                            ]
+                        }
+                        hasFeedback
+                    >
                         <Input />
                     </Form.Item>
 
-                    <Form.Item label="이메일" name="email" rules={[{required:true, message:"이메일을 입력해주세요.", type:"email"}]} hasFeedback>
+                    <Form.Item
+                        label="이메일"
+                        name="email"
+                        rules={
+                            [
+                                {
+                                    required:true,
+                                    message:"이메일을 입력해주세요.",
+                                    type:"email"
+                                }
+                            ]
+                        }
+                        hasFeedback
+                    >
                         <Input />
                     </Form.Item>
 
-                    <Form.Item label="비밀번호" name="password" rules={[{required:true, message:"비밀번호를 입력해주세요."}]} hasFeedback>
+                    <Form.Item
+                        label="비밀번호"
+                        name="password"
+                        rules={
+                            [
+                                {
+                                    required:true,
+                                    message:"비밀번호를 입력해주세요."
+                                }
+                            ]
+                        }
+                        hasFeedback
+                    >
                         <Input.Password/>
                     </Form.Item>
 
-                    <Form.Item label="비밀번호 확인" name="password1" rules={[{required:true, message:"비밀번호를 입력해주세요."}]} hasFeedback>
+                    <Form.Item
+                        label="비밀번호 확인"
+                        name="password1"
+                        rules={
+                            [
+                                {
+                                    required:true,
+                                    message:"비밀번호를 입력해주세요."
+                                }
+                            ]
+                        }
+                        hasFeedback
+                    >
                         <Input.Password/>
                     </Form.Item>
 
-                    <Form.Item label="성별" name="gender" hasFeedback>
+                    <Form.Item
+                        label="성별"
+                        name="gender"
+                        rules={
+                            [
+                                {
+                                    required:true,
+                                    message:"성별을 입력해주세요"
+                                }
+                            ]
+                        }
+                        hasFeedback
+                    >
                         <Select>
                             <Select.Option value="남자">남자</Select.Option>
                             <Select.Option value="여자">여자</Select.Option>
                         </Select>
                     </Form.Item>
-                    
+
                     <Form.Item>
                         <Button type="primary" htmlType="submit">회원가입</Button>
                     </Form.Item>
