@@ -7,7 +7,7 @@ const Root = () => {
     return (
         <AppLayout>
             <Routes>
-                <Route path="/" element={<Signup/>}/>
+                <Route path="signup/" element={<Signup/>}/>
             </Routes>
         </AppLayout>
     );
