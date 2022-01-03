@@ -5,8 +5,6 @@ import Login from '../pages/accounts/Login';
 const LoginRequiredRoute = ({children}) => {
     const isAuthenticated = window.localStorage.getItem("isAuthenticated");
 
-    const location = useLocation();
-
     console.log("isAuthenticated", isAuthenticated==="false");
     console.log("isAuthenticated", typeof(isAuthenticated));
 
