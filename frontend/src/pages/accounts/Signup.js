@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Axios from "axios";
 import {
     Form,
@@ -7,13 +8,15 @@ import {
     Select,
     notification,
   } from 'antd';
-  import { SmileOutlined, FrownOutlined } from "@ant-design/icons"
-  import 'antd/dist/antd.css';
+import { SmileOutlined, FrownOutlined } from "@ant-design/icons"
+import 'antd/dist/antd.css';
 import "./scss/signup.scss"
 
 const Signup = () => {
 
     const [fieldErrors, setFieldErrors] = useState({});
+
+    const navigate = useNavigate();
 
     const onFinish = (values) => {
 
@@ -41,6 +44,7 @@ const Signup = () => {
                         placement:"topLeft",
                         icon: <SmileOutlined style={{color:"#108ee9"}} />,
                     });
+                    navigate("/login")
                 } catch (error) {
     
                     setFieldErrors({

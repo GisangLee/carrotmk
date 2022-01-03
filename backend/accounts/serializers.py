@@ -1,4 +1,6 @@
 from os import write
+from re import search
+from django.contrib.auth import authenticate
 from rest_framework import serializers
 from . import models as user_models
 
