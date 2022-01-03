@@ -1,9 +1,59 @@
-import React from 'react'
-import { Form, Input, Button } from 'antd';
+import React, { useState }from 'react'
+import { useNavigate } from 'react-router-dom';
+import Axios from 'axios';
+import { Form, Input, Button, notification } from 'antd';
+import { SmileOutlined, FrownOutlined } from "@ant-design/icons";
 import 'antd/dist/antd.css';
 import "./scss/login.scss";
+import useLocalStorage from '../../utils/useLocalStorage';
 
 const Login = () => {
+
+    const [fieldErrors, setFieldErrors] = useState({});
+
+    const navigate = useNavigate();
+
+    const [jwtToken, setJwtToken] = useLocalStorage("jwtToken", "");
+    const [isAuthenticated, setIsAuthenticated] = useLocalStorage("isAuthenticated", false);
+
+    const onFinish = (values) => {
+        async function fn(){
+            const { username, password } = values;
+
+            setFieldErrors({});
+
+            const data = { username, password };
+            
+            try {
+                const response = await Axios.post("http://127.0.0.1:8000/accounts/token/auth/", data)
+
+                const { data : { token: jwtToken }} = response;
+
+                notification.open({
+                    message:"로그인 성공",
+                    description:"메인 페이지로 이동합니다.",
+                    placement:"topLeft",
+                    icon:<SmileOutlined style={{color:"#108ee9"}}/>
+                });
+
+                setJwtToken(jwtToken);
+                setIsAuthenticated(true);
+                navigate("/");
+            } catch (error) {
+                setFieldErrors({
+                    "loginError": "정보를 정확하게 입력하세요."
+                })
+                notification.open({
+                    message:"로그인 실패",
+                    description:fieldErrors["loginError"],
+                    placement:"topLeft",
+                    icon:<FrownOutlined style={{color:"ff3333"}} />
+                });
+            }
+        }
+        fn();
+    }
+
     return(
         <div className="login">
             <h3 className='login__title'>로그인</h3>
@@ -13,16 +63,16 @@ const Login = () => {
                     labelCol={{ span: 8 }}
                     wrapperCol={{ span: 16 }}
                     autoComplete="off"
+                    onFinish={onFinish}
                 >
                     <Form.Item
-                        label="이메일"
-                        name="email"
+                        label="닉네임"
+                        name="username"
                         rules={
                             [
                                 {
                                     required: true,
-                                    message: '이메일을 입력해 주세요.',
-                                    type:"email",
+                                    message: '닉네임을 입력해주세요.',
                                 }
                             ]
                         }
