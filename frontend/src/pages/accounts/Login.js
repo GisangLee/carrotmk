@@ -27,20 +27,32 @@ const Login = () => {
             
             try {
                 const response = await Axios.post("http://127.0.0.1:8000/accounts/token/auth/", data)
-                console.log("response", response);
 
                 const { data : { token: jwtToken }} = response;
 
-                notification.open({
-                    message:"로그인 성공",
-                    description:"메인 페이지로 이동합니다.",
-                    placement:"topLeft",
-                    icon:<SmileOutlined style={{color:"#108ee9"}}/>
-                });
+                if (jwtToken === undefined){
+                    notification.open({
+                        message:"로그인 실패",
+                        description:"정보를 정확히 입력해 주세요",
+                        placement:"topLeft",
+                        icon:<FrownOutlined style={{color:"#ff3333"}}/>
+                    });
+                    navigate("/login");
+                }else{
+                    notification.open({
+                        message:"로그인 성공",
+                        description:"메인 페이지로 이동합니다.",
+                        placement:"topLeft",
+                        icon:<SmileOutlined style={{color:"#108ee9"}}/>
+                    });
+                    setJwtToken(jwtToken);
+                    setIsAuthenticated(true);
+                    navigate("/");
+                }
 
-                setJwtToken(jwtToken);
-                setIsAuthenticated(true);
-                navigate("/");
+
+
+
             } catch (error) {
                 setFieldErrors({
                     "loginError": "정보를 정확하게 입력하세요."
@@ -49,7 +61,7 @@ const Login = () => {
                     message:"로그인 실패",
                     description:fieldErrors["loginError"],
                     placement:"topLeft",
-                    icon:<FrownOutlined style={{color:"ff3333"}} />
+                    icon:<FrownOutlined style={{color:"#ff3333"}} />
                 });
             }
         }

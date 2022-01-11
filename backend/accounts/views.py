@@ -9,19 +9,23 @@ from . import serializers
 class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    response = None
+    res_status = None
+
     def post(self, request):
         serializer = serializers.LoginSerializer(data=request.data)
 
         if not serializer.is_valid():
-            return Response(
-                {"message": "Request Body Error"}, status=status.HTTP_409_CONFLICT
-            )
+            response = {"message": "Request Body Error"}
+            res_status = status.HTTP_409_CONFLICT
 
-        if serializer.validated_data["username"] == None:
-            return Response({"message": "fail"}, status=status.HTTP_200_OK)
-
-        response = {"Success": True, "token": serializer.data["token"]}
-        return Response(response, status=status.HTTP_200_OK)
+        elif serializer.validated_data["username"] == None:
+            response = {"message": "fail"}
+            res_status = status.HTTP_200_OK
+        else:
+            response = {"message": "success", "token": serializer.data["token"]}
+            res_status = status.HTTP_200_OK
+        return Response(response, status=res_status)
 
 
 class SignupView(APIView):
