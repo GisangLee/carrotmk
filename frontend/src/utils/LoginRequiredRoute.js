@@ -8,7 +8,7 @@ const LoginRequiredRoute = ({children}) => {
     console.log("isAuthenticated", isAuthenticated==="false");
     console.log("isAuthenticated", typeof(isAuthenticated));
 
-    return isAuthenticated==="false" ? (
+    return !isAuthenticated ? (
         <Navigate to="/login"/>
     ) : (
         children

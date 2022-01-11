@@ -6,6 +6,24 @@ from rest_framework.response import Response
 from . import serializers
 
 
+class LoginView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        serializer = serializers.LoginSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(
+                {"message": "Request Body Error"}, status=status.HTTP_409_CONFLICT
+            )
+
+        if serializer.validated_data["username"] == None:
+            return Response({"message": "fail"}, status=status.HTTP_200_OK)
+
+        response = {"Success": True, "token": serializer.data["token"]}
+        return Response(response, status=status.HTTP_200_OK)
+
+
 class SignupView(APIView):
     permission_classes = [permissions.AllowAny]
 

@@ -23,9 +23,11 @@ const Login = () => {
             setFieldErrors({});
 
             const data = { username, password };
+            console.log("data", data);
             
             try {
                 const response = await Axios.post("http://127.0.0.1:8000/accounts/token/auth/", data)
+                console.log("response", response);
 
                 const { data : { token: jwtToken }} = response;
 

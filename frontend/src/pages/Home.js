@@ -7,7 +7,7 @@ const Home = () => {
 
     const logout = () => {
         window.localStorage.removeItem("jwtToken")
-        window.localStorage.setItem("isAuthenticated", false);
+        window.localStorage.removeItem("isAuthenticated");
     };
 
     return(
