@@ -17,6 +17,8 @@ class LoginSerializer(serializers.Serializer):
         username = data.get("username", None)
         password = data.get("password", None)
         user = authenticate(username=username, password=password)
+        print(f"username : {username}")
+        print(f"password : {password}")
         print("user is ", user)
 
         if user is None:
