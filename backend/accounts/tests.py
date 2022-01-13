@@ -1,6 +1,8 @@
 import json
 from django.test import TestCase, Client
 from django.urls import reverse
+import rest_framework
+from accounts import models as user_models
 
 # Create your tests here.
 
@@ -20,7 +22,8 @@ class SignupTest(TestCase):
             "/accounts/signup/", json.dumps(data), content_type="application/json"
         )
 
-        print(f"res : {response.data}")
+        print(f"res data : {response.data}")
+        print(f"res json : {response.json()}")
 
         self.assertEqual(
             response.json(),
@@ -37,9 +40,8 @@ class SignupTest(TestCase):
 
 class LoginTest(TestCase):
     def test_login_jwt_post_success(self):
-        data = {"username": "dev", "password": "rltkd123"}
 
-        print(f"client : {client}")
+        data = {"username": "dev", "password": "rltkd123"}
 
         response = client.post(
             "/accounts/token/auth/", json.dumps(data), content_type="application/json"
