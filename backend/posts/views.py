@@ -13,7 +13,11 @@ class PostListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        posts = post_models.Post.objects.all()
+        posts = (
+            post_models.Post.objects.all()
+            .select_related("author")
+            .prefetch_related("photos")
+        )
         serializer = serializers.PostListSerializer(posts, many=True)
         print(f"serializer data : {serializer.data}")
         return Response(serializer.data, status=status.HTTP_200_OK)

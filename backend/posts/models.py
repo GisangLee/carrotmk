@@ -20,7 +20,6 @@ class Post(models.Model):
 
 
 class Photo(models.Model):
-
     file = models.ImageField(upload_to="posts/%Y/%m/%d")
     caption = models.TextField(blank=True)
     post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name="photos")

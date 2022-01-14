@@ -26,6 +26,11 @@ class AuthorSerializer(serializers.ModelSerializer):
 class PostListSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
 
+    photo = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = post_models.Post
         fields = "__all__"
+
+    def get_photo(self, obj):
+        return [PhotoSerializer(x).data for x in obj.photos.all()]
