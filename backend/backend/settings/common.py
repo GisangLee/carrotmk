@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "corsheaders",
     # My Apps
     "accounts.apps.AccountsConfig",
+    "posts.apps.PostsConfig",
     "baton.autodiscover",
 ]
 
