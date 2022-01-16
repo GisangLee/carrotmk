@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -14,13 +15,23 @@ class PostModifyView(APIView):
         pk = kwargs.get("pk")
         if pk is not None:
             post = get_object_or_404(post_models.Post, pk=pk)
-
             if post.author.pk == request.user.pk:
-                post_photo = request.data["photo"]
-                serializer = serializers.PostListSerializer(post, data=request.data)
-                if serializer.is_valid():
-                    serializer.save(author=request.user, photo=post_photo)
-                    return Response(serializer.data, status=status.HTTP_200_OK)
+                files = request.FILES.getlist("file")
+                if files:
+                    post_photo = request.data.pop("photo")
+                    serializer = serializers.PostModifySerializer(
+                        post, data=request.data
+                    )
+                    if serializer.is_valid():
+                        post = serializer.save(author=request.user)
+                        for file in files:
+                            photo_obj = post_models.Photo.objects.update_or_create(
+                                file=file, post=post
+                            )
+                            photo_obj.save()
+                        return Response(serializer.data, status=status.HTTP_200_OK)
+                else:
+                    pass
             return Response("권한이 없습니다.", status=status.HTTP_400_BAD_REQUEST)
         return Response("게시글이 존재하지 않습니다.", status=status.HTTP_400_BAD_REQUEST)
 
@@ -49,6 +60,35 @@ class PostModifyView(APIView):
         return Response(message, status=result)
 
 
+class PostCreateView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, format=None):
+        serialzier = serializers.PostCreateSerializer(data=request.data)
+        print(f"REQUEST data : {request.data}")
+        print(f"REQUEST user : {request.user}")
+        print(f"REQUEST FILES : {request.FILES}")
+
+        photos = request.FILES.getlist("photos")
+        if serialzier.is_valid():
+            if photos:
+                print("---------------사진 포함 게시글 작성 중....----------------")
+                print(f"게시글 작성 serializer data : {serialzier.validated_data}")
+                post = serialzier.save(author=request.user)
+                print("게시글 저장")
+                for photo in photos:
+                    photos = post_models.Photo.objects.create(post=post, file=photo)
+                    photos.save()
+                return Response(serialzier.data, status=status.HTTP_201_CREATED)
+            else:
+                print("---------------사진  미포함 게시글 작성 중....----------------")
+                print(f"게시글 작성 serializer data : {serialzier.validated_data}")
+                post = serialzier.save(author=request.user)
+                print("게시글 저장")
+                return Response(serialzier.data, status=status.HTTP_201_CREATED)
+        return Response(serialzier.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class PostListView(APIView):
     permission_classes = [AllowAny]
 
@@ -61,17 +101,3 @@ class PostListView(APIView):
         serializer = serializers.PostListSerializer(posts, many=True)
         print(f"serializer data : {serializer.data}")
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def post(self, request):
-
-        serialzier = serializers.PostListSerializer(data=request.data)
-        print(f"REQUEST data : {request.data}")
-        print(f"REQUEST user : {request.user}")
-        print(f"REQUEST photo : {request.data['photo']}")
-        post_photo = request.data["photo"]
-        if serialzier.is_valid():
-            print(f"게시글 작성 serializer data : {serialzier.validated_data}")
-            serialzier.save(author=request.user, photo=post_photo)
-            return Response(serialzier.data, status=status.HTTP_201_CREATED)
-        return Response(serialzier.errors, status=status.HTTP_400_BAD_REQUEST)
-

@@ -31,7 +31,7 @@ class LoginSerializer(serializers.Serializer):
         except user_models.User.DoesNotExist:
             raise serializers.ValidationError("User does not exists")
 
-        return {"username": username, "token": jwt_token}
+        return {"username": user.pk, "token": jwt_token}
 
 
 class SignupSerializer(serializers.ModelSerializer):

@@ -5,11 +5,13 @@ import Signup from "./accounts/Signup";
 import Login from "./accounts/Login";
 import Home from "./Home";
 import LoginRequiredRoute from "../utils/LoginRequiredRoute";
+import PostUpload from "./posts/UploadPost";
 
 const Root = () => {
     return (
         <AppLayout>
             <Routes>
+                <Route path="upload/" element={<PostUpload/>}/>
                 <Route
                     path="/profile"
                     element={

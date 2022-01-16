@@ -15,6 +15,7 @@ const Login = () => {
 
     const [jwtToken, setJwtToken] = useLocalStorage("jwtToken", "");
     const [isAuthenticated, setIsAuthenticated] = useLocalStorage("isAuthenticated", false);
+    const [userId, setUserId] = useLocalStorage("userId", "");
 
     const onFinish = (values) => {
         async function fn(){
@@ -29,6 +30,8 @@ const Login = () => {
                 const response = await Axios.post("http://127.0.0.1:8000/accounts/token/auth/", data)
 
                 const { data : { token: jwtToken }} = response;
+                const { data : { user }} = response;
+                console.log("Res :", response);
 
                 if (jwtToken === undefined){
                     notification.open({
@@ -47,6 +50,7 @@ const Login = () => {
                     });
                     setJwtToken(jwtToken);
                     setIsAuthenticated(true);
+                    setUserId(user);
                     navigate("/");
                 }
 

@@ -9,11 +9,9 @@ urlpatterns = [
     path("accounts/", include("accounts.urls", namespace="accounts")),
     path("posts/", include("posts.urls", namespace="posts")),
     path("baton/", include("baton.urls")),
-]
-
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
     import debug_toolbar
 

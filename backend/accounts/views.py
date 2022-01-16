@@ -16,14 +16,21 @@ class LoginView(APIView):
         serializer = serializers.LoginSerializer(data=request.data)
 
         if not serializer.is_valid():
+
             response = {"message": "Request Body Error", "token": None}
             res_status = status.HTTP_409_CONFLICT
 
         elif serializer.validated_data["username"] == None:
+
             response = {"message": "fail", "token": None}
             res_status = status.HTTP_200_OK
         else:
-            response = {"message": "success", "token": serializer.data["token"]}
+            print("validated_data", serializer.validated_data)
+            response = {
+                "message": "success",
+                "token": serializer.data["token"],
+                "user": serializer.data["username"],
+            }
             res_status = status.HTTP_200_OK
         return Response(response, status=res_status)
 
