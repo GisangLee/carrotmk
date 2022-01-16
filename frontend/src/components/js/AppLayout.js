@@ -9,7 +9,9 @@ const AppLayout = ({children}) => {
         <>
             <AppHeader/>
             {children}
-            <Button type="primary" href="upload/">포스팅</Button>
+            <Button type="primary" href="/upload">포스팅</Button>
+            <Button type="primary" href="/login">로그인</Button>
+            <Button type="primary" href="/profile">프로필</Button>
             <AppFooter/>
         </>
     )

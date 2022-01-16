@@ -11,9 +11,16 @@ const Root = () => {
     return (
         <AppLayout>
             <Routes>
-                <Route path="upload/" element={<PostUpload/>}/>
                 <Route
-                    path="/profile"
+                    path="upload/"
+                    element={
+                        <LoginRequiredRoute>
+                            <PostUpload/>
+                        </LoginRequiredRoute>
+                    }
+                />
+                <Route
+                    path="profile/"
                     element={
                         <LoginRequiredRoute>
                             <Home/>

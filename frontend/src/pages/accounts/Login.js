@@ -29,7 +29,6 @@ const Login = () => {
                 const response = await Axios.post("http://127.0.0.1:8000/accounts/token/auth/", data)
 
                 const { data : { token: jwtToken }} = response;
-                const { data : { user }} = response;
                 console.log("Res :", response);
 
                 if (jwtToken === undefined){

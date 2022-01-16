@@ -16,7 +16,7 @@ class PostModifyView(APIView):
         if pk is not None:
             post = get_object_or_404(post_models.Post, pk=pk)
             if post.author.pk == request.user.pk:
-                files = request.FILES.getlist("file")
+                files = request.FILES.getlist("photos")
                 if files:
                     post_photo = request.data.pop("photo")
                     serializer = serializers.PostModifySerializer(

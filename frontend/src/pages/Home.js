@@ -8,7 +8,6 @@ const Home = () => {
     const logout = () => {
         window.localStorage.removeItem("jwtToken")
         window.localStorage.removeItem("isAuthenticated");
-        window.localStorage.removeItem("userId");
     };
 
     return(
