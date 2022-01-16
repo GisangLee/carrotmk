@@ -15,7 +15,6 @@ const Login = () => {
 
     const [jwtToken, setJwtToken] = useLocalStorage("jwtToken", "");
     const [isAuthenticated, setIsAuthenticated] = useLocalStorage("isAuthenticated", false);
-    const [userId, setUserId] = useLocalStorage("userId", "");
 
     const onFinish = (values) => {
         async function fn(){
@@ -50,7 +49,6 @@ const Login = () => {
                     });
                     setJwtToken(jwtToken);
                     setIsAuthenticated(true);
-                    setUserId(user);
                     navigate("/");
                 }
 

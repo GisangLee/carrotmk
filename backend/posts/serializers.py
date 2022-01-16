@@ -24,11 +24,10 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 class PostCreateSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
-    images = PhotoSerializer(many=True, read_only=True)
 
     class Meta:
         model = post_models.Post
-        fields = ["pk", "author", "title", "desc", "images"]
+        fields = ["pk", "author", "title", "desc"]
 
 
 class PostModifySerializer(serializers.ModelSerializer):

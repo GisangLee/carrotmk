@@ -61,8 +61,6 @@ class PostModifyView(APIView):
 
 
 class PostCreateView(APIView):
-    permission_classes = [AllowAny]
-
     def post(self, request, format=None):
         serialzier = serializers.PostCreateSerializer(data=request.data)
         print(f"REQUEST data : {request.data}")

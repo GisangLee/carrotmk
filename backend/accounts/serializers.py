@@ -27,6 +27,7 @@ class LoginSerializer(serializers.Serializer):
         try:
             payload = JWT_PAYLOAD_HANDLER(user)
             jwt_token = JWT_ENCODE_HANDLER(payload)
+            print(f"jwt_token BACKEND : {jwt_token}")
             update_last_login(None, user)
         except user_models.User.DoesNotExist:
             raise serializers.ValidationError("User does not exists")

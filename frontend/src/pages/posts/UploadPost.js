@@ -8,8 +8,8 @@ const PostUpload = () => {
     const [fileList, setFileList] = useState([]);
     let navigate = useNavigate();
 
-    const jwtToken = localStorage.getItem("jwtToken");
-
+    const jwtToken = JSON.parse(localStorage.getItem("jwtToken"));
+    
     const handleOnChangeUpload = ({fileList}) => {
         setFileList(fileList);
     }
@@ -28,6 +28,8 @@ const PostUpload = () => {
             formData.append("photos", file.originFileObj);
         });
         const headers = {Authorization: `JWT ${jwtToken}`};
+        //const tmp = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VybmFtZSI6ImRldiIsImV4cCI6MTY0MjkxMDIzOCwiZW1haWwiOiJraXNhbmc2NzEwQGdtYWlsLmNvbSIsIm9yaWdfaWF0IjoxNjQyMzA1NDM4fQ.dYbLryrxluuKQMZthVDDNCDGbbqWgbf3k2pKzUXMh5c"
+        //const headers = {Authorization: `JWT ${tmp}`};
         console.log("headers :", headers);
         try {
             const response = await axios.post("http://127.0.0.1:8000/posts/post/upload", formData, {headers});
@@ -66,7 +68,6 @@ const PostUpload = () => {
                 <Button icon={<UploadOutlined />}>Click to upload</Button>
                 </Upload>
             </Form.Item>
-            {JSON.stringify(fileList)}
             <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                 <Button type="primary" htmlType="submit">Submit</Button>
             </Form.Item>
