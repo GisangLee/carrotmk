@@ -14,6 +14,9 @@ class Post(models.Model):
     desc = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    like_user_set = models.ManyToManyField(
+        user_models.User, blank=True, related_name="likes_user"
+    )
 
     def __str__(self):
         return self.title

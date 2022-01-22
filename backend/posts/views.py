@@ -31,7 +31,58 @@ class PhotoDeleteView(APIView):
         return Response(message, status=result)
 
 
-class PostModifyView(APIView):
+class PostCreateView(APIView):
+    def post(self, request, format=None):
+        serialzier = serializers.PostCreateSerializer(data=request.data)
+        print(f"REQUEST data : {request.data}")
+        print(f"REQUEST user : {request.user}")
+        print(f"REQUEST FILES : {request.FILES}")
+
+        photos = request.FILES.getlist("photos")
+        if serialzier.is_valid():
+            if photos:
+                print("---------------사진 포함 게시글 작성 중....----------------")
+                print(f"게시글 작성 serializer data : {serialzier.validated_data}")
+                post = serialzier.save(author=request.user)
+                print("게시글 저장")
+                for photo in photos:
+                    photos = post_models.Photo.objects.create(post=post, file=photo)
+                    photos.save()
+                return Response(serialzier.data, status=status.HTTP_201_CREATED)
+            else:
+                print("---------------사진  미포함 게시글 작성 중....----------------")
+                print(f"게시글 작성 serializer data : {serialzier.validated_data}")
+                post = serialzier.save(author=request.user)
+                print("게시글 저장")
+                return Response(serialzier.data, status=status.HTTP_201_CREATED)
+        return Response(serialzier.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PostListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self):
+        posts = (
+            post_models.Post.objects.select_related("author")
+            .prefetch_related("photos")
+            .all()
+        )
+        serializer = serializers.PostListSerializer(posts, many=True)
+        print(f"serializer data : {serializer.data}")
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class PostDetailView(APIView):
+    def get(self, request, pk, format=None):
+        post = (
+            post_models.Post.objects.select_related("author")
+            .prefetch_related("photos")
+            .get(pk=pk)
+        )
+        serializer = serializers.PostListSerializer(post)
+        print("serializer data : ", serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def put(self, request, **kwargs):
         pk = kwargs.get("pk")
         if pk is not None:
@@ -91,42 +142,38 @@ class PostModifyView(APIView):
         return Response(message, status=result)
 
 
-class PostCreateView(APIView):
-    def post(self, request, format=None):
-        serialzier = serializers.PostCreateSerializer(data=request.data)
-        print(f"REQUEST data : {request.data}")
-        print(f"REQUEST user : {request.user}")
-        print(f"REQUEST FILES : {request.FILES}")
-
-        photos = request.FILES.getlist("photos")
-        if serialzier.is_valid():
-            if photos:
-                print("---------------사진 포함 게시글 작성 중....----------------")
-                print(f"게시글 작성 serializer data : {serialzier.validated_data}")
-                post = serialzier.save(author=request.user)
-                print("게시글 저장")
-                for photo in photos:
-                    photos = post_models.Photo.objects.create(post=post, file=photo)
-                    photos.save()
-                return Response(serialzier.data, status=status.HTTP_201_CREATED)
+class LikePostView(APIView):
+    def post(self, request, **kwargs):
+        pk = kwargs.get("pk")
+        result = None
+        if pk is not None:
+            post = get_object_or_404(post_models.Post, pk=pk)
+            if post:
+                post.like_user_set.add(request.user)
+                result = status.HTTP_200_OK
             else:
-                print("---------------사진  미포함 게시글 작성 중....----------------")
-                print(f"게시글 작성 serializer data : {serialzier.validated_data}")
-                post = serialzier.save(author=request.user)
-                print("게시글 저장")
-                return Response(serialzier.data, status=status.HTTP_201_CREATED)
-        return Response(serialzier.errors, status=status.HTTP_400_BAD_REQUEST)
+                result = status.HTTP_400_BAD_REQUEST
 
+        else:
+            result = status.HTTP_400_BAD_REQUEST
 
-class PostListView(APIView):
-    permission_classes = [AllowAny]
+        return Response(status=result)
 
-    def get(self, request):
-        posts = (
-            post_models.Post.objects.select_related("author")
-            .prefetch_related("photos")
-            .all()
-        )
-        serializer = serializers.PostListSerializer(posts, many=True)
-        print(f"serializer data : {serializer.data}")
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def delete(self, request, **kwargs):
+        pk = kwargs.get("pk")
+        result = None
+
+        if pk is not None:
+            post = get_object_or_404(post_models.Post, pk=pk)
+            if post:
+                post.like_user_set.remove(request.user)
+                result = status.HTTP_200_OK
+            else:
+                result = status.HTTP_400_BAD_REQUEST
+        else:
+            result = status.HTTP_400_BAD_REQUEST
+        return Response(status=result)
+
+    def get_serializer_context(self):
+        context = {"request": self.request}
+        return context

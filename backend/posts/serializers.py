@@ -1,3 +1,4 @@
+from statistics import mode
 from rest_framework import serializers
 from . import models as post_models
 from accounts import models as user_models
@@ -43,9 +44,24 @@ class PostListSerializer(serializers.ModelSerializer):
 
     photos = serializers.SerializerMethodField()
 
+    is_like = serializers.SerializerMethodField()
+
     class Meta:
         model = post_models.Post
-        fields = "__all__"
+        fields = [
+            "pk",
+            "author",
+            "title",
+            "desc",
+            "created_at",
+            "updated_at",
+            "photos",
+            "is_like",
+        ]
 
     def get_photos(self, obj):
         return [PhotoSerializer(x).data for x in obj.photos.all()]
+
+    def get_is_like(self, obj):
+        user = obj.author
+        return obj.like_user_set.filter(pk=user.pk).exists()
