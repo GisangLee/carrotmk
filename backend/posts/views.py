@@ -20,7 +20,7 @@ class PhotoDeleteView(APIView):
             photo = get_object_or_404(post_models.Photo, pk=pk)
             if photo:
                 message = "사진이 삭제 되었습니다."
-                resulst = status.HTTP_200_OK
+                result = status.HTTP_200_OK
                 photo.delete()
             else:
                 message = "사진이 존재하지 않습니다."
