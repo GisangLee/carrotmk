@@ -12,7 +12,7 @@ from . import serializers
 
 class PhotoDeleteView(APIView):
     def delete(self, request, **kwargs):
-        pk = kwargs.get("pk")
+        pk = kwargs.get("photo_pk")
         message = ""
         result = None
 
