@@ -10,6 +10,27 @@ from . import serializers
 # Create your views here.
 
 
+class PhotoDeleteView(APIView):
+    def delete(self, request, **kwargs):
+        pk = kwargs.get("pk")
+        message = ""
+        result = None
+
+        if pk is not None:
+            photo = get_object_or_404(post_models.Photo, pk=pk)
+            if photo:
+                message = "사진이 삭제 되었습니다."
+                resulst = status.HTTP_200_OK
+                photo.delete()
+            else:
+                message = "사진이 존재하지 않습니다."
+                result = status.HTTP_400_BAD_REQUEST
+        else:
+            message = "사진이 존재하지 않습니다."
+            result = status.HTTP_400_BAD_REQUEST
+        return Response(message, status=result)
+
+
 class PostModifyView(APIView):
     def put(self, request, **kwargs):
         pk = kwargs.get("pk")
@@ -29,6 +50,10 @@ class PostModifyView(APIView):
                             )
                             photo_obj.save()
                         return Response(serializer.data, status=status.HTTP_200_OK)
+                    else:
+                        return Response(
+                            serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                        )
                 else:
                     serializer = serializers.PostModifySerializer(
                         post, data=request.data
