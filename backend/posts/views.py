@@ -16,22 +16,28 @@ class PostModifyView(APIView):
         if pk is not None:
             post = get_object_or_404(post_models.Post, pk=pk)
             if post.author.pk == request.user.pk:
-                files = request.FILES.getlist("photos")
-                if files:
-                    post_photo = request.data.pop("photo")
+                photos = request.FILES.getlist("photos")
+                if photos:
                     serializer = serializers.PostModifySerializer(
                         post, data=request.data
                     )
                     if serializer.is_valid():
                         post = serializer.save(author=request.user)
-                        for file in files:
-                            photo_obj = post_models.Photo.objects.update_or_create(
-                                file=file, post=post
+                        for photo in photos:
+                            photo_obj = post_models.Photo.objects.create(
+                                file=photo, post=post
                             )
                             photo_obj.save()
                         return Response(serializer.data, status=status.HTTP_200_OK)
                 else:
-                    pass
+                    serializer = serializers.PostModifySerializer(
+                        post, data=request.data
+                    )
+                    if serializer.is_valid():
+                        post = serializer.save(author=request.user)
+                        return Response(serializer.data, status=status.HTTP_200_OK)
+                    else:
+                        Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             return Response("권한이 없습니다.", status=status.HTTP_400_BAD_REQUEST)
         return Response("게시글이 존재하지 않습니다.", status=status.HTTP_400_BAD_REQUEST)
 
