@@ -1,17 +1,22 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import update_last_login
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
-from rest_framework_jwt.settings import api_settings
 from . import models as user_models
 
-JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
-JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
+
+class JwtTokenObtainSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super(JwtTokenObtainSerializer, cls).get_token(user)
+        token["user_pk"] = user.pk
+        return token
 
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=320)
     password = serializers.CharField(max_length=128, write_only=True)
-    token = serializers.CharField(max_length=255, read_only=True)
+    refresh_jwt_token = serializers.CharField(max_length=500, read_only=True)
 
     def validate(self, data):
         username = data.get("username", None)
@@ -25,14 +30,28 @@ class LoginSerializer(serializers.Serializer):
             return {"username": None}
 
         try:
-            payload = JWT_PAYLOAD_HANDLER(user)
-            jwt_token = JWT_ENCODE_HANDLER(payload)
-            print(f"jwt_token BACKEND : {jwt_token}")
+            jwt_token = JwtTokenObtainSerializer.get_token(user)
+            refresh_token = str(jwt_token)
+            access_token = str(jwt_token.access_token)
+            token = {"refresh_token": refresh_token, "access_token": access_token}
             update_last_login(None, user)
         except user_models.User.DoesNotExist:
             raise serializers.ValidationError("User does not exists")
 
-        return {"username": user.pk, "token": jwt_token}
+        return {
+            "username": user.pk,
+            "token": token,
+        }
+
+    def create(self, validated_data):
+        print("인증 값 : ", validated_data)
+        pk = validated_data["username"]
+        refresh_token = validated_data["token"]["refresh_token"]
+        if refresh_token:
+            user = user_models.User.objects.get(pk=pk)
+            user.refresh_jwt_token = refresh_token
+            user.save()
+            return user
 
 
 class SignupSerializer(serializers.ModelSerializer):

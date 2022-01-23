@@ -18,3 +18,6 @@ class User(AbstractUser):
     email_secret = models.CharField(max_length=200, blank=True, verbose_name="이메일 인증 키")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성 일자")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="수정 일자")
+    refresh_jwt_token = models.CharField(
+        max_length=500, blank=True, verbose_name="JWT 갱신 토큰"
+    )
