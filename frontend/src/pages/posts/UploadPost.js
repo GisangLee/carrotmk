@@ -32,9 +32,22 @@ const PostUpload = () => {
         //const headers = {Authorization: `JWT ${tmp}`};
         console.log("headers :", headers);
         try {
-            const response = await axios.post("http://127.0.0.1:8000/posts/post/upload", formData, {headers});
+            // const verify_response = await axios.post("http://127.0.0.1:8000/api/token/verify/", {token:jwtToken});
+            // console.log("verify_response :", verify_response.code);
+            // const response = await axios.post("http://127.0.0.1:8000/posts/post/upload", formData, {headers});
+            const response = await axios.post("http://127.0.0.1:8000/api/token/verify/", {token:jwtToken})
+                .then(res => {
+                    console.log("res : ", res);
+                    axios.post("http://127.0.0.1:8000/posts/post/upload", formData, {headers});
+                    navigate('/');
+                })
+                .catch(error => {
+                    window.localStorage.removeItem("jwtToken");
+                    window.localStorage.removeItem("isAuthenticated");
+                    navigate('/login');
+                });
             console.log("SUCCESS ", response);
-            navigate('/');
+            
         } catch (error) {
             console.log("error", error);
         }
