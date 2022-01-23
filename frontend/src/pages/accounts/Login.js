@@ -31,7 +31,7 @@ const Login = () => {
                 const { data : { token: jwtToken }} = response;
                 console.log("Res :", response);
 
-                if (jwtToken === undefined){
+                if (jwtToken === null){
                     notification.open({
                         message:"로그인 실패",
                         description:"정보를 정확히 입력해 주세요",
