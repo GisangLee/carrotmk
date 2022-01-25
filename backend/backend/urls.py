@@ -10,6 +10,9 @@ urlpatterns = [
     path("accounts/", include("accounts.urls", namespace="accounts")),
     path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
     path("posts/", include("posts.urls", namespace="posts")),
+    path("dj-rest-auth/", include("dj_rest_auth.urls")),
+    path("api/rest-auth/", include("rest_auth.urls")),
+    path("dj-rest-auth/registration/", include("dj_rest_auth.registration.urls")),
     path("baton/", include("baton.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
