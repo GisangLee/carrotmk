@@ -1,17 +1,13 @@
 import os
 import requests
-import datetime
 from django.contrib.auth import logout
 from django.shortcuts import redirect
-from django.core.files.base import ContentFile
 from rest_framework import permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_auth.registration.views import SocialLoginView
-from allauth.socialaccount.providers.kakao import views as kakao_views
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from . import serializers
 from . import models as user_models
+from . import serializers as user_serializers
 
 
 class LoginView(APIView):
@@ -138,20 +134,25 @@ class KakaoCallbackView(APIView):
         try:
             user = user_models.User.objects.get(email=email)
             if user:
-                raise KakaoException()
+                raise KakaoException("이미 존재하는 사용자 입니다.")
 
         except user_models.User.DoesNotExist:
-            data = {"code": code, "access_token": access_token}
-            accept = requests.post(
-                f"http://127.0.0.1:8000/accounts/login/kakao/todjango", data=data
+            user = user_models.User.objects.create(
+                email=email, username=nickname, gender=gender
             )
 
-            accept_json = accept.json()
-            accept_jwt = accept_json.get("token")
+            jwt_token = user_serializers.JwtTokenObtainSerializer.get_token(user)
+            refresh_token = str(jwt_token)
+            access_token = str(jwt_token.access_token)
 
-            print(f"카카오 JWT : {accept_jwt}")
+            user.refresh_jwt_token = refresh_token
+            user.set_unusable_password()
+            user.save()
 
+            response = {
+                "message": "success",
+                "token": access_token,
+                "user": user.username,
+            }
 
-class KakaoToDjangoView(SocialLoginView):
-    adapter_class = kakao_views.KakaoOAuth2Adapter
-    client_class = OAuth2Client
+            return Response(response, status=status.HTTP_200_OK)

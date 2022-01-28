@@ -10,6 +10,5 @@ urlpatterns = [
     path("token/auth/", accounts_views.LoginView.as_view()),
     path("login/kakao/", accounts_views.KakaoLoginView.as_view()),
     path("login/kakao/callback/", accounts_views.KakaoCallbackView.as_view()),
-    path("login/kakao/todjango/", accounts_views.KakaoToDjangoView.as_view()),
     # path("token/auth/", obtain_jwt_token),
 ]
